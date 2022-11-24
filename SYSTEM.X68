@@ -63,7 +63,7 @@ SCRPLOT
 KBINIT
 
     CLR.B   (KBVALUE)
-    CLR.B   (KBCHANG)
+    CLR.B   (KBEDGE)
     RTS
     
 KBUPD   ;UPDATE KEYBOARD
@@ -88,7 +88,7 @@ KBUPD   ;UPDATE KEYBOARD
     NOT.B   D0
     AND.B   D2,D0
     MOVE.B  D2,(KBVALUE)
-    MOVE.B  D0,(KBCHANG)
+    MOVE.B  D0,(KBEDGE)
     MOVEM.L (A7)+,D0-D3
         
     RTE
@@ -99,6 +99,7 @@ KBUPD   ;UPDATE KEYBOARD
         ROXL.B  #1,D2
         DBRA.W  D3,.LOOP
         RTS
+
 
 
 

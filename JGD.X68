@@ -24,33 +24,52 @@ JGDUPD
     ;MOVE.B  D0,(JGDMOT)
     
     ;update coordinate
-    MOVE.W  D0,-(A7)
+    MOVEM.W  D0-D1,-(A7)
     
     MOVE.W  (JGDPOSY),D0
-    BTST.B  #1,(KBVALUE)
-    BEQ     .CHKDWN
+    MOVE.W  (JGDPOSX),D1
+    BTST.B  #0,(KBVALUE)
+    BNE     .POSLEFT
+    BTST.B  #1,(KBEDGE)
+    BNE     .POSUP
+    BTST.B  #2,(KBVALUE)
+    BNE     .POSRIGHT
+    ;BTST.B  #3,(KBVALUE)
+    ;BEQ     .POSDOWN
+    ;BRA .POSUP
+    ;ADD.W   #JGDGRAV,D0
+    BRA .CONT
+    
+.POSLEFT
+    SUB.W   #JGDSPEED,D1
+    BRA .DONE
+    
+.POSRIGHT
+    ADD.W   #JGDSPEED,D1
+    BRA .DONE
+    
+.POSUP 
+    ;BTST.B  #3,(KBVALUE)
+    ;SUB.W   #JGDSPEED,D0
+    ;BEQ     .CONT
     SUB.W   #JGDSPEED,D0
     
-.CHKDWN 
-    BTST.B  #3,(KBVALUE)
-    BEQ     .CONT
-    ADD.W   #JGDSPEED,D0
-    
-.CONT   ;CHECK COLLISIONS
+.CONT   ;CHECK COLLISIONS UP
     CMP.W   #JGDSIZE,D0
     BGE     .CONT2
     MOVE.W  #JGDSIZE,D0
     BRA     .DONE
         
-.CONT2
+.CONT2  ;CHECK COLLISIONS DOWN
     CMP.W   #SCRHEIGH-JGDSIZE,D0
     BLE     .DONE
     MOVE.W  #SCRHEIGH-JGDSIZE,D0
 
 .DONE   ;UPDATE VARIABLE
-        MOVE.W D0,(JGDPOSY)
+        MOVE.W  D0,(JGDPOSY)
+        MOVE.W  D1,(JGDPOSX)
 
-    MOVE.W (A7)+,D0
+    MOVEM.W (A7)+,D0-D1
     RTS
     
 JGDPLOT
@@ -81,6 +100,8 @@ JGDPLOT
 
     MOVEM.L (A7)+,D0-D4
     RTS
+
+
 
 
 *~Font name~Fixedsys~
